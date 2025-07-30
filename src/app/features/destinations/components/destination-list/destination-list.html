@@ -1,0 +1,51 @@
+<div class="destination-container">
+  <!-- Filtros -->
+  <aside class="filters">
+    <h3>Filtros</h3>
+    <input type="text" placeholder="Código de país" [(ngModel)]="filters.countryCode">
+    <select [(ngModel)]="filters.type">
+      <option value="">Todos los tipos</option>
+      <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+    </select>
+    <button (click)="applyFilters()">Buscar</button>
+  </aside>
+  <!-- Contenedor de acciones -->
+    <div class="actions">
+    <button (click)="openCreateForm()">Crear nuevo destino</button>
+    <button [disabled]="!selectedDestination" (click)="openUpdateForm()">Actualizar destino</button>
+    <button [disabled]="!selectedDestination" (click)="deleteSelected()">Eliminar destino</button>
+    </div>
+  <!-- Tabla de destinos -->
+  <section class="destination-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Código País</th>
+          <th>Tipo</th>
+          <th>Última Modificación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr 
+            *ngFor="let d of destinations" 
+            [class.selected]="selectedDestination?.id === d.id"
+            (click)="selectDestination(d)">
+            <td>{{ d.name }}</td>
+            <td>{{ d.description }}</td>
+            <td>{{ d.countryCode }}</td>
+            <td>{{ d.type }}</td>
+            <td>{{ d.lastModified | date: 'short' }}</td>
+        </tr>
+       </tbody>
+    </table>
+
+    <!-- Paginación -->
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="page === 0">Anterior</button>
+      <span>Página {{ page + 1 }}</span>
+      <button (click)="nextPage()" [disabled]="!hasMore">Siguiente</button>
+    </div>
+  </section>
+</div>

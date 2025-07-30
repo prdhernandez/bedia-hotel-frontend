@@ -1,3 +1,7 @@
-import { Routes } from '@angular/router';
+import { DestinationList } from './features/destinations/components/destination-list/destination-list'
 
-export const routes: Routes = [];
+export const routes = [
+  { path: 'destinations', component: DestinationList },
+  { path: '', component: DestinationList },
+  { path: '**', redirectTo: 'destinations' }
+];
