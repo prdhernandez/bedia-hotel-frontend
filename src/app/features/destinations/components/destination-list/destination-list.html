@@ -1,51 +1,108 @@
-<div class="destination-container">
-  <!-- Filtros -->
-  <aside class="filters">
-    <h3>Filtros</h3>
-    <input type="text" placeholder="Código de país" [(ngModel)]="filters.countryCode">
-    <select [(ngModel)]="filters.type">
-      <option value="">Todos los tipos</option>
-      <option *ngFor="let t of types" [value]="t">{{ t }}</option>
-    </select>
-    <button (click)="applyFilters()">Buscar</button>
-  </aside>
-  <!-- Contenedor de acciones -->
-    <div class="actions">
-    <button (click)="openCreateForm()">Crear nuevo destino</button>
-    <button [disabled]="!selectedDestination" (click)="openUpdateForm()">Actualizar destino</button>
-    <button [disabled]="!selectedDestination" (click)="deleteSelected()">Eliminar destino</button>
-    </div>
-  <!-- Tabla de destinos -->
-  <section class="destination-table">
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Descripción</th>
-          <th>Código País</th>
-          <th>Tipo</th>
-          <th>Última Modificación</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr 
-            *ngFor="let d of destinations" 
-            [class.selected]="selectedDestination?.id === d.id"
-            (click)="selectDestination(d)">
-            <td>{{ d.name }}</td>
-            <td>{{ d.description }}</td>
-            <td>{{ d.countryCode }}</td>
-            <td>{{ d.type }}</td>
-            <td>{{ d.lastModified | date: 'short' }}</td>
-        </tr>
-       </tbody>
-    </table>
+<mat-toolbar color="primary" class="navbar">
+  <span class="app-title">Bedia hotel</span>
+  <span class="spacer"></span>
+  <button mat-button>Inicio</button>
+  <button mat-button>Estadísticas</button>
+  <button mat-button>Configuración</button>
+</mat-toolbar>
 
-    <!-- Paginación -->
-    <div class="pagination">
-      <button (click)="prevPage()" [disabled]="page === 0">Anterior</button>
-      <span>Página {{ page + 1 }}</span>
-      <button (click)="nextPage()" [disabled]="!hasMore">Siguiente</button>
-    </div>
-  </section>
+<div class="page-container">
+  <h1 class="page-title">Listado de Destinos</h1>
+
+  <div class="destination-container">
+    <!-- Filtros -->
+    <aside class="filters">
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Filtrar por país</mat-label>
+        <input matInput [(ngModel)]="filters.countryCode">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Tipo</mat-label>
+        <mat-select [(ngModel)]="filters.type">
+          <mat-option value="">Todos</mat-option>
+          <mat-option *ngFor="let type of destinationTypes" [value]="type">
+            {{ typeLabels[type] }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button color="primary" (click)="applyFilters()">Buscar</button>
+    </aside>
+
+    <!-- Tabla y acciones -->
+    <section class="destination-table">
+      <div class="actions">
+        <button mat-raised-button color="primary" (click)="openCreateModal()">
+          <mat-icon>add</mat-icon>
+          Crear
+        </button>
+
+        <button mat-raised-button color="accent" (click)="openEditModal()" [disabled]="!selectedDestination">
+          <mat-icon>edit</mat-icon>
+          Editar
+        </button>
+
+        <button mat-raised-button color="warn" (click)="openDeleteConfirm()" [disabled]="!selectedDestination">
+          <mat-icon>delete</mat-icon>
+          Eliminar
+        </button>
+      </div>
+
+      <mat-table [dataSource]="destinations" class="mat-elevation-z8">
+        <ng-container matColumnDef="select">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let destination">
+            <mat-radio-button
+              name="selectedDestination"
+              [checked]="destination.id === selectedDestination?.id"
+              (change)="selectDestination(destination)">
+            </mat-radio-button>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+          <mat-cell *matCellDef="let destination">{{ destination.id }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell>
+          <mat-cell *matCellDef="let destination">{{ destination.name }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <mat-header-cell *matHeaderCellDef>Descripción</mat-header-cell>
+          <mat-cell *matCellDef="let destination">{{ destination.description }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="countryCode">
+          <mat-header-cell *matHeaderCellDef>Código País</mat-header-cell>
+          <mat-cell *matCellDef="let destination">{{ destination.countryCode }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <mat-header-cell *matHeaderCellDef>Tipo</mat-header-cell>
+          <mat-cell *matCellDef="let destination">{{ typeLabels[destination.type] }}</mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+
+      <!-- Paginación -->
+      <div class="pagination">
+        <button mat-stroked-button color="primary" (click)="prevPage()" [disabled]="page === 0">
+          <mat-icon>chevron_left</mat-icon> Anterior
+        </button>
+
+        <span class="page-info">Página {{ page + 1 }}</span>
+
+        <button mat-stroked-button color="primary" (click)="nextPage()" [disabled]="!hasMore">
+          Siguiente <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+    </section>
+  </div>
 </div>

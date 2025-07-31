@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>¿Eliminar destino?</h2>
+
+<mat-dialog-content>
+  <p>¿Estás seguro de que quieres eliminar <strong>{{ data.name }}</strong>?</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button mat-raised-button color="warn" (click)="confirm()">Eliminar</button>
+</mat-dialog-actions>

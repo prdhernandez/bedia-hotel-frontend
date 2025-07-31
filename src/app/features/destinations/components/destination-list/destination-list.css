@@ -1,43 +1,123 @@
+/* Navbar */
+.navbar {
+  font-family: 'Roboto', sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #3f51b5;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.app-title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Página */
+.page-container {
+  padding: 2rem;
+  background-color: #f0f4f8;
+  min-height: 100vh;
+  box-sizing: border-box;
+  color: #2c387e;
+  font-family: 'Inter', sans-serif;
+}
+
+.page-title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #2c387e;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Contenido principal */
 .destination-container {
   display: flex;
   gap: 2rem;
+  align-items: flex-start;
+}
+
+/* Filtros */
+.filters {
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.1);
+}
+
+/* Tabla y acciones */
+.destination-table {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.actions button {
+  background-color: #3f51b5;
+  color: white;
+  font-weight: 600;
+  font-family: 'Roboto', sans-serif;
+  transition: background-color 0.25s ease;
+}
+
+.actions button:hover {
+  background-color: #303f9f;
+}
+
+/* Tabla Angular Material */
+mat-table {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(63, 81, 181, 0.08);
+}
+
+mat-header-cell {
+  background-color: #dbe4f3;
+  font-weight: 700;
+  color: #2c387e;
   padding: 1rem;
 }
 
-.filters {
-  width: 200px;
+mat-cell {
+  padding: 1rem;
+  color: #2c387e;
 }
 
-.filters input,
-.filters select {
-  width: 100%;
-  margin-bottom: 0.5rem;
+mat-row:hover {
+  background-color: #edf2fb;
 }
 
-.destination-table {
-  flex: 1;
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-}
-
-thead {
-  background-color: #f2f2f2;
-}
-
-th, td {
-  padding: 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
+/* Paginación */
 .pagination {
   margin-top: 1rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page-info {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #2c387e;
+}
+
+.filters, .destination-table, mat-cell, .page-info {
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
 }
