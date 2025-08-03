@@ -1,17 +1,14 @@
-<mat-toolbar color="primary" class="navbar">
-  <span class="app-title">Bedia hotel</span>
-  <span class="spacer"></span>
-  <button mat-button>Inicio</button>
-  <button mat-button>Estadísticas</button>
-  <button mat-button>Configuración</button>
-</mat-toolbar>
-
 <div class="page-container">
   <h1 class="page-title">Listado de Destinos</h1>
 
   <div class="destination-container">
     <!-- Filtros -->
     <aside class="filters">
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Filtrar por nombre</mat-label>
+        <input matInput [(ngModel)]="filters.name">
+      </mat-form-field>
+
       <mat-form-field appearance="fill" class="filter-field">
         <mat-label>Filtrar por país</mat-label>
         <input matInput [(ngModel)]="filters.countryCode">
@@ -26,6 +23,11 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
+
+      <datepicker-locale
+        [value]="filters.lastModified"
+        (valueChange)="filters.lastModified = $event">
+      </datepicker-locale>
 
       <button mat-stroked-button color="primary" (click)="applyFilters()">Buscar</button>
     </aside>
@@ -47,12 +49,18 @@
           <mat-icon>delete</mat-icon>
           Eliminar
         </button>
+
+        <button mat-raised-button color="primary" (click)="exportToExcel()">
+          <mat-icon>download</mat-icon>
+          Exportar
+        </button>
+
       </div>
 
-      <mat-table [dataSource]="destinations" class="mat-elevation-z8">
+      <mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort #sort="matSort">
         <ng-container matColumnDef="select">
-          <mat-header-cell *matHeaderCellDef></mat-header-cell>
-          <mat-cell *matCellDef="let destination">
+          <mat-header-cell *matHeaderCellDef class="col-select"></mat-header-cell>
+          <mat-cell *matCellDef="let destination" class="col-select">
             <mat-radio-button
               name="selectedDestination"
               [checked]="destination.id === selectedDestination?.id"
@@ -62,28 +70,33 @@
         </ng-container>
 
         <ng-container matColumnDef="id">
-          <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
-          <mat-cell *matCellDef="let destination">{{ destination.id }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef class="col-id">ID</mat-header-cell>
+          <mat-cell *matCellDef="let destination" class="col-id">{{ destination.id }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell>
-          <mat-cell *matCellDef="let destination">{{ destination.name }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef class="col-name" mat-sort-header>Nombre</mat-header-cell>
+          <mat-cell *matCellDef="let destination" class="col-name">{{ destination.name }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="description">
-          <mat-header-cell *matHeaderCellDef>Descripción</mat-header-cell>
-          <mat-cell *matCellDef="let destination">{{ destination.description }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef class="col-description" mat-sort-header>Descripción</mat-header-cell>
+          <mat-cell *matCellDef="let destination" class="col-description">{{ destination.description }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="countryCode">
-          <mat-header-cell *matHeaderCellDef>Código País</mat-header-cell>
-          <mat-cell *matCellDef="let destination">{{ destination.countryCode }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef class="col-country" mat-sort-header>Código país</mat-header-cell>
+          <mat-cell *matCellDef="let destination" class="col-country">{{ destination.countryCode }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="type">
-          <mat-header-cell *matHeaderCellDef>Tipo</mat-header-cell>
-          <mat-cell *matCellDef="let destination">{{ typeLabels[destination.type] }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef class="col-type">Tipo</mat-header-cell>
+          <mat-cell *matCellDef="let destination" class="col-type">{{ typeLabels[destination.type] }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="lastModified">
+          <mat-header-cell *matHeaderCellDef class="col-last">Última modificación</mat-header-cell>
+          <mat-cell *matCellDef="let destination" class="col-last">{{ destination.lastModified | date: 'dd/MM/yy HH:mm'}}</mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

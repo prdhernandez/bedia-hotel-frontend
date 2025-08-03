@@ -1,0 +1,21 @@
+<mat-toolbar class="navbar" color="primary">
+  <!-- Icono a la izquierda -->
+  <button mat-icon-button class="logo-icon">
+    <mat-icon>travel_explore</mat-icon>
+  </button>
+
+  <!-- Título de la app -->
+  <span class="app-title">Hotel Bedia</span>
+
+  <!-- Espaciador para empujar los botones a la derecha -->
+  <span class="spacer"></span>
+
+  <!-- Enlaces ficticios -->
+     <nav class="nav-links">
+        <a mat-button routerLink="/home" routerLinkActive="active-link"><mat-icon class="menu-icon">home</mat-icon>Inicio</a>
+        <a mat-button routerLink="/destinations" routerLinkActive="active-link"><mat-icon class="menu-icon">explore</mat-icon>Destinos</a>
+        <a mat-button routerLink="/hotels" routerLinkActive="active-link"><mat-icon class="menu-icon">hotel</mat-icon>Hoteles</a>
+        <a mat-button routerLink="/rrhh" routerLinkActive="active-link"><mat-icon class="menu-icon">assignment</mat-icon>RRHH</a>
+        <a mat-button routerLink="/users" routerLinkActive="active-link"><mat-icon class="menu-icon">group</mat-icon>Usuarios</a>
+      </nav>
+</mat-toolbar>

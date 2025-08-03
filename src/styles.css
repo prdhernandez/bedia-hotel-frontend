@@ -1,4 +1,24 @@
-/* You can add global styles to this file, and also import other style files */
+body {
+  font-family: 'Outfit', sans-serif;
+  margin: 0;
+  background-color: #f0f4f8;
+  color: #2c387e;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+h1, h2, h3, h4, .page-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  color: #2c387e;
+}
+
+.app-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 30px;
+  font-weight: 400;
+  color: #ffffff;
+}
+
+button, .mat-button, .mat-raised-button, .mat-stroked-button, .mat-header-cell {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+}

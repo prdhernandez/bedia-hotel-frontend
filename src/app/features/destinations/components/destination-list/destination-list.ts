@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DestinationService } from '../../services/destination.service';
 import { FormsModule } from '@angular/forms';
@@ -15,13 +15,21 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
-import { MatCard, MatCardContent, MatCardTitle } from '@angular/material/card';
-import { MatToolbar } from '@angular/material/toolbar';
+import { RouterModule } from '@angular/router';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { DatepickerLocale } from '../../../../shared/components/locale-date-picker/datepicker-locale';
+import { MatSortModule } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+
 
 @Component({
   selector: 'app-destination-list',
   standalone: true,
-  imports: [CommonModule, FormsModule,
+  imports: [RouterModule, CommonModule, FormsModule,
       MatTableModule,
       MatButtonModule,
       MatInputModule,
@@ -30,20 +38,23 @@ import { MatToolbar } from '@angular/material/toolbar';
       MatIconModule,
       MatRadioModule,
       MatPaginatorModule,
-      MatFormFieldModule,
       MatSelectModule,
-      MatToolbar],
+      MatDatepickerModule,
+      MatNativeDateModule,
+      DatepickerLocale,
+      MatSortModule ],
+  
   templateUrl: './destination-list.html',
   styleUrl: './destination-list.css'
 })
 
-export class DestinationList {
+export class DestinationList implements AfterViewInit {
   destinations: Destination[] = [];
-  filters = { countryCode: '', type: '' };
+  filters = { name: '', countryCode: '', type: '', lastModified: null as Date | null };
   page = 0;
-  size = 10;
+  size = 8;
   hasMore = false;
-  displayedColumns: string[] = ['select', 'id', 'name', 'description', 'countryCode', 'type'];
+  displayedColumns: string[] = ['select', 'id', 'name', 'description', 'countryCode', 'type', 'lastModified'];
   showForm = false;
   formMode: 'create' | 'edit' = 'create';
   showDeleteDialog = false;
@@ -59,6 +70,9 @@ export class DestinationList {
   };
   destinationTypes: string[] = Object.keys(this.typeLabels);
 
+  @ViewChild(MatSort) sort!: MatSort;
+  dataSource = new MatTableDataSource<Destination>();
+
   selectDestination(destination: Destination): void {
     this.selectedDestination = destination;
   }
@@ -69,10 +83,15 @@ export class DestinationList {
     this.loadDestinations();
   }
 
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+  }
+
   loadDestinations(): void {
     this.destinationService.getDestinations(this.page, this.size, this.filters).subscribe(response => {
       this.destinations = response.content;
       this.hasMore = !response.last;
+      this.dataSource.data = this.destinations;
     });
   }
 
@@ -82,30 +101,31 @@ export class DestinationList {
   }
 
   openCreateModal() {
-  const dialogRef = this.dialog.open(DestinationFormDialog, {
-    data: { destination: null }
-  });
+    const dialogRef = this.dialog.open(DestinationFormDialog, {
+      data: { destination: null }
+    });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      this.destinationService.createDestination(result).subscribe(() => this.loadDestinations());
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.destinationService.createDestination(result).subscribe(() => this.loadDestinations());
+      }
+    });
+  }
 
-openEditModal() {
-  if (!this.selectedDestination) return;
+  openEditModal() {
+    if (!this.selectedDestination) return;
 
-  const dialogRef = this.dialog.open(DestinationFormDialog, {
-    data: { destination: this.selectedDestination }
-  });
+    const dialogRef = this.dialog.open(DestinationFormDialog, {
+      data: { destination: this.selectedDestination }
+    });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      this.destinationService.updateDestination(result).subscribe(() => this.loadDestinations());
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.destinationService.updateDestination(result).subscribe(() => this.loadDestinations());
+      }
+    });
+  }
+
   closeForm(): void {
     this.showForm = false;
     this.editableDestination = null;
@@ -128,23 +148,23 @@ openEditModal() {
   }
 
   openDeleteConfirm() {
-  if (!this.selectedDestination) return;
+    if (!this.selectedDestination) return;
 
-  const dialogRef = this.dialog.open(ConfirmDeleteDialog, {
-    data: { name: this.selectedDestination.name }
-  });
+    const dialogRef = this.dialog.open(ConfirmDeleteDialog, {
+      data: { name: this.selectedDestination.name }
+    });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      if (this.selectedDestination && this.selectedDestination.id != null) {
-        this.destinationService.deleteDestination(this.selectedDestination.id).subscribe(() => {
-          this.selectedDestination = null;
-          this.loadDestinations();
-        });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        if (this.selectedDestination && this.selectedDestination.id != null) {
+          this.destinationService.deleteDestination(this.selectedDestination.id).subscribe(() => {
+            this.selectedDestination = null;
+            this.loadDestinations();
+          });
+        }
       }
-    }
-  });
-}
+    });
+  }
 
   cancelDelete(): void {
     this.showDeleteDialog = false;
@@ -173,4 +193,26 @@ openEditModal() {
     }
   }
 
+  exportToExcel(): void {
+    const exportData = this.dataSource.data.map(dest => ({
+      ID: dest.id,
+      Nombre: dest.name,
+      Descripción: dest.description,
+      Código: dest.countryCode,
+      Tipo: dest.type,
+      'Última modificación': new Date(dest.lastModified).toLocaleString()
+    }));
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook: XLSX.WorkBook = { Sheets: { 'Destinos': worksheet }, SheetNames: ['Destinos'] };
+
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+
+    FileSaver.saveAs(blob, 'destinos.xlsx');
 }
+
+
+}
+
+

@@ -20,7 +20,19 @@ export class DestinationService {
     if (filters?.type) {
         params = params.set('type', filters.type);
     }
+     if (filters?.name) {
+        params = params.set('name', filters.name);
+    }
+    if (filters.lastModified) {
+      const formattedDate = filters.lastModified.toISOString();
+      params = params.set('lastModified', formattedDate);
+    }
 
+
+    params = params.set('page', page);
+    params = params.set('size', size);
+
+    console.log('Fetching destinations with params:', params.toString());
     return this.http.get(`${this.apiUrl}`, { params });
 }
 

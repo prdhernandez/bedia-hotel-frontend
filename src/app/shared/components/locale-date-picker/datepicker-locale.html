@@ -1,0 +1,6 @@
+<mat-form-field>
+  <mat-label>Fecha de modificación</mat-label>
+  <input matInput [matDatepicker]="dp" [value]="value" (dateChange)="onDateChange($event)" />
+  <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+  <mat-datepicker #dp></mat-datepicker>
+</mat-form-field>
